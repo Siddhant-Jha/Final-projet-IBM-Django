@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/3.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
+# 
 
 import os
 
@@ -24,10 +25,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'aay0j_9b&ky3a7(8m8il+-1ud(scw12@w5!+5-=gsk6ynzi0ls'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if os.environ.get('ENV') == 'PRODUCTION':
+    DEBUG = False
+else:
+    DEBUG = True
 
 # <HINT> add your cloud host here
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['django-ibm-project.herokuapp.com']
 
 
 # Application definition
@@ -43,6 +47,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -119,9 +124,29 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
+import dj_database_url
+
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_ROOT = os.path.join(STATIC_ROOT, 'media')
 MEDIA_URL = '/media/'
+
+if os.environ.get('ENV') == 'PRODUCTION':
+    # Simplified static file serving.
+    # https://warehouse.python.org/project/whitenoise/
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+    # Static files settings
+    PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+
+    STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
+
+    # Extra places for collectstatic to find static files.
+    STATICFILES_DIRS = (
+        os.path.join(PROJECT_ROOT, 'static'),
+    )
+
+    db_from_env = dj_database_url.config(conn_max_age=500)
+    DATABASES['default'].update(db_from_env)
 

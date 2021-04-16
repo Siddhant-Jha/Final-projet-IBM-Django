@@ -31,7 +31,7 @@ else:
     DEBUG = True
 
 # <HINT> add your cloud host here
-ALLOWED_HOSTS = ['django-ibm-project.herokuapp.com']
+ALLOWED_HOSTS = ['django-ibm.herokuapp.com']
 
 
 # Application definition
